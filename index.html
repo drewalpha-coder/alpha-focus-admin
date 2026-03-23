@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha Focus — Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-box">
+      <h1>Alpha Focus</h1>
+      <p>Admin Dashboard</p>
+      <button id="login-btn" class="btn btn-primary">Sign in with Google</button>
+      <div id="login-error" class="error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app" style="display:none;">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h2>Alpha Focus</h2>
+        <span class="badge">Admin</span>
+      </div>
+      <ul class="nav-list">
+        <li><a href="#" class="nav-link active" data-section="students">Students</a></li>
+        <li><a href="#" class="nav-link" data-section="groups">Groups</a></li>
+        <li><a href="#" class="nav-link" data-section="global-sites">Global Sites</a></li>
+        <li><a href="#" class="nav-link" data-section="requests">Site Requests</a></li>
+        <li><a href="#" class="nav-link" data-section="activity">Activity Log</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="btn btn-ghost">Sign out</button>
+      </div>
+    </nav>
+
+    <main class="content">
+      <!-- STUDENTS SECTION -->
+      <section id="section-students" class="section active">
+        <div class="section-header">
+          <h1>Students</h1>
+        </div>
+        <div class="section-body">
+          <div class="list-panel" id="students-list-panel">
+            <table class="data-table" id="students-table">
+              <thead>
+                <tr><th>Name</th><th>Email</th><th>Group</th><th>Status</th></tr>
+              </thead>
+              <tbody id="students-tbody"></tbody>
+            </table>
+          </div>
+          <div class="detail-panel" id="student-detail" style="display:none;">
+            <div class="detail-header">
+              <button class="btn btn-ghost back-btn" id="student-back-btn">&larr; Back</button>
+              <h2 id="detail-student-name"></h2>
+              <span id="detail-student-tamper-badge" class="tamper-badge" style="display:none;">Clock tamper detected</span>
+              <span id="detail-student-email" class="detail-email"></span>
+            </div>
+            <div class="detail-section">
+              <h3>Block / Unblock</h3>
+              <label class="toggle-label">
+                <input type="checkbox" id="student-blocked-toggle">
+                <span>Block this student (pauses all browsing)</span>
+              </label>
+            </div>
+            <div class="detail-section">
+              <h3>Allowed Sites</h3>
+              <div id="detail-sites-list" class="site-list"></div>
+              <div class="inline-form">
+                <input type="text" id="add-personal-site" placeholder="e.g. desmos.com">
+                <button class="btn btn-primary btn-sm" id="add-personal-site-btn">Add Personal Site</button>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h3>Recent Blocked Attempts</h3>
+              <table class="data-table compact">
+                <thead><tr><th>URL</th><th>Time</th></tr></thead>
+                <tbody id="detail-blocked-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GROUPS SECTION -->
+      <section id="section-groups" class="section">
+        <div class="section-header">
+          <h1>Groups</h1>
+          <div class="inline-form">
+            <input type="text" id="new-group-name" placeholder="New group name">
+            <button class="btn btn-primary btn-sm" id="create-group-btn">Create Group</button>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="list-panel" id="groups-list-panel">
+            <div id="groups-list" class="groups-grid"></div>
+          </div>
+          <div class="detail-panel" id="group-detail" style="display:none;">
+            <div class="detail-header">
+              <button class="btn btn-ghost back-btn" id="group-back-btn">&larr; Back</button>
+              <h2 id="detail-group-name"></h2>
+            </div>
+            <div class="detail-section">
+              <h3>Members</h3>
+              <div id="group-members" class="member-list"></div>
+              <div class="inline-form">
+                <select id="add-member-select"><option value="">Add student...</option></select>
+                <button class="btn btn-primary btn-sm" id="add-member-btn">Add</button>
+              </div>
+            </div>
+            <div class="detail-section">
+              <h3>Group Allowed Sites</h3>
+              <div id="group-sites-list" class="site-list"></div>
+              <div class="inline-form">
+                <input type="text" id="add-group-site" placeholder="e.g. desmos.com">
+                <button class="btn btn-primary btn-sm" id="add-group-site-btn">Add Site</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GLOBAL SITES SECTION -->
+      <section id="section-global-sites" class="section">
+        <div class="section-header">
+          <h1>Global Sites</h1>
+          <div class="inline-form">
+            <input type="text" id="new-global-domain" placeholder="e.g. khanacademy.org">
+            <input type="text" id="new-global-label" placeholder="Label (optional)">
+            <button class="btn btn-primary btn-sm" id="add-global-btn">Add Global Site</button>
+          </div>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="global-sites-table">
+            <thead>
+              <tr><th>Domain</th><th>Label</th><th>Added By</th><th>Students</th><th></th></tr>
+            </thead>
+            <tbody id="global-sites-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SITE REQUESTS SECTION -->
+      <section id="section-requests" class="section">
+        <div class="section-header">
+          <h1>Site Requests</h1>
+          <div class="inline-form">
+            <select id="requests-filter">
+              <option value="pending">Pending</option>
+              <option value="all">All</option>
+              <option value="approved">Approved</option>
+              <option value="denied">Denied</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="requests-filter-btn">Filter</button>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="requests-empty" style="display:none;color:var(--text-muted);padding:24px;">No site requests.</div>
+          <table class="data-table" id="requests-table">
+            <thead>
+              <tr><th>Student</th><th>Domain</th><th>URL</th><th>Time</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="requests-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ACTIVITY LOG SECTION -->
+      <section id="section-activity" class="section">
+        <div class="section-header">
+          <h1>Activity Log</h1>
+          <div class="inline-form">
+            <select id="activity-student-filter"><option value="">All students</option></select>
+            <input type="date" id="activity-date-from">
+            <input type="date" id="activity-date-to">
+            <label class="checkbox-label"><input type="checkbox" id="activity-tamper-only"> Clock tampering only</label>
+            <button class="btn btn-primary btn-sm" id="activity-filter-btn">Filter</button>
+          </div>
+        </div>
+        <div class="section-body">
+          <table class="data-table" id="activity-table">
+            <thead>
+              <tr><th>Student</th><th>URL Attempted</th><th>Time</th><th>Repeats</th></tr>
+            </thead>
+            <tbody id="activity-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
