@@ -3,7 +3,7 @@
 // =============================================
 const SUPABASE_URL = 'https://bzzykkemlpaqeaqvlakt.supabase.co';
 const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6enlra2VtbHBhcWVhcXZsYWt0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDI4OTE2MCwiZXhwIjoyMDg5ODY1MTYwfQ.eCwCw5qO7coQmDp0hZtcWM6q6j2rVL5s-4XLMRz8t4I';
-const ADMIN_EMAIL = 'your-email@gmail.com';                        // <-- REPLACE with your Google email
+const ADMIN_PASSWORD = 'alphafocus2024';  // <-- CHANGE THIS to your own password
 
 // =============================================
 // SUPABASE CLIENT (service role — full access)
@@ -57,35 +57,8 @@ class AdminSupabase {
     return r;
   }
 
-  // Google OAuth via Supabase Auth
-  async signInWithGoogle() {
-    const redirectUrl = window.location.origin + window.location.pathname;
-    window.location.href = `${this.url}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`;
-  }
-
-  async handleAuthCallback() {
-    const hash = window.location.hash;
-    if (!hash || !hash.includes('access_token')) return null;
-
-    const params = new URLSearchParams(hash.substring(1));
-    const accessToken = params.get('access_token');
-    if (!accessToken) return null;
-
-    // Get user info
-    const r = await fetch(`${this.url}/auth/v1/user`, {
-      headers: { 'Authorization': `Bearer ${accessToken}`, 'apikey': this.key },
-    });
-    if (!r.ok) return null;
-    const user = await r.json();
-
-    // Clear hash
-    history.replaceState(null, '', window.location.pathname);
-
-    return user;
-  }
-
   async signOut() {
-    localStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_authed');
     window.location.reload();
   }
 }
@@ -109,28 +82,11 @@ let state = {
 // =============================================
 
 async function initAuth() {
-  // Check for OAuth callback
-  const user = await db.handleAuthCallback();
-  if (user) {
-    if (user.email !== ADMIN_EMAIL) {
-      showLoginError('Access denied. Only the admin account is allowed.');
-      return;
-    }
-    localStorage.setItem('admin_user', JSON.stringify(user));
+  // Check if already logged in
+  if (localStorage.getItem('admin_authed') === 'true') {
     showApp();
     return;
   }
-
-  // Check for saved session
-  const saved = localStorage.getItem('admin_user');
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    if (parsed.email === ADMIN_EMAIL) {
-      showApp();
-      return;
-    }
-  }
-
   showLogin();
 }
 
@@ -496,7 +452,15 @@ function renderActivity(attempts) {
 // =============================================
 
 // Login
-document.getElementById('login-btn').addEventListener('click', () => db.signInWithGoogle());
+document.getElementById('login-btn').addEventListener('click', () => {
+  const pwd = document.getElementById('login-password').value;
+  if (pwd === ADMIN_PASSWORD) {
+    localStorage.setItem('admin_authed', 'true');
+    showApp();
+  } else {
+    showLoginError('Incorrect password.');
+  }
+});
 document.getElementById('logout-btn').addEventListener('click', () => db.signOut());
 
 // Student back button
